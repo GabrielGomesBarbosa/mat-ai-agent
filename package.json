@@ -1,0 +1,21 @@
+{
+  "name": "mat-ai-agent",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx src/orchestrator/runPlanner.ts --taskId",
+    "planner": "node dist/orchestrator/runPlanner.js --taskId",
+    "build": "tsc && tsc-alias"
+  },
+  "dependencies": {
+    "axios": "^1.7.0",
+    "dotenv": "^16.4.0",
+    "openai": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsc-alias": "^1.8.16",
+    "tsx": "^4.0.0",
+    "typescript": "^5.6.0"
+  }
+}
