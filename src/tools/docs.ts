@@ -1,5 +1,5 @@
-import fs from "fs/promises";
-import path from "path";
+import path from "node:path";
+import fs from "node:fs/promises";
 
 export async function loadProjectDocs(): Promise<string> {
     const dir = path.join(process.cwd(), "context");
