@@ -94,9 +94,8 @@ The agent will generate a JSON plan in the `plans/` directory, named `task-<TASK
 └── tsconfig.json        # TypeScript configuration
 ```
 
-## ToDo's
+## 🗺️ Roadmap
 
-[ ] - Get context files directly from the frontend repo
-[ ] - Update the monday implementation to use `@mondaydotcomorg/api` instead
-[ ] - Include frontend repo path in environment variables
-
+- [ ] **Context Integration**: Get context files directly from the frontend repository.
+- [ ] **Monday SDK**: Update the Monday.com implementation to use `@mondaydotcomorg/api` instead of raw Axios calls.
+- [ ] **Environment Config**: Include the frontend repository path in environment variables for better local integration.
