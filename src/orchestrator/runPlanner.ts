@@ -12,9 +12,9 @@ async function main() {
         const id = parseArgs();
         console.log(`[planner] Running for task ${id}...`);
         const plan = await runPlannerAgent(id);
-        const { jsonPath } = await savePlannerOutput(plan);
-        console.log(`[planner] JSON saved at: ${jsonPath}`);
-        console.log(`[planner] Summary:`, plan.summary);
+        // const { jsonPath } = await savePlannerOutput(plan);
+        // console.log(`[planner] JSON saved at: ${jsonPath}`);
+        // console.log(`[planner] Summary:`, plan.summary);
     } catch (err) {
         console.error("[planner] Error:", err);
         process.exit(1);

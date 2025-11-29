@@ -1,21 +1,37 @@
 import axios from "axios";
 import { env } from "@/config/env";
+import mondayClient from "@/services/mondayClient";
+import { extractBlockContents } from "@/utils/content-parser";
+import { DocumentBlock } from "@/types/monday-types";
 
 export type MondayTask = {
   id: string;
-  title: string;
-  description: string;
+  name: string;
+  description: {
+    id: string
+    blocks: DocumentBlock[]
+  };
 };
 
-export async function getMondayTaskById(taskId: string): Promise<MondayTask> {
+type MondayTaskResponse = {
+  id: string;
+  name: string;
+  description: string
+};
+
+export async function getMondayTaskById(taskId: string): Promise<MondayTaskResponse> {
   const query = `
     query ($ids: [ID!]) {
       items (ids: $ids) {
         id
         name
-        column_values {
+        description {
           id
-          text
+          blocks {
+            id
+            doc_id
+            content
+          }
         }
       }
     }
@@ -23,28 +39,17 @@ export async function getMondayTaskById(taskId: string): Promise<MondayTask> {
 
   const variables = { ids: [taskId] };
 
-  const res = await axios.post(
-    env.mondayUrl,
-    { query, variables },
-    {
-      headers: {
-        Authorization: env.mondayToken,
-        "Content-Type": "application/json",
-      },
-    }
-  );
+  const response = await mondayClient.request<{ items: MondayTask[] }>(query, variables);
 
-  const item = res.data?.data?.items?.[0];
+  const item = response.items?.[0];
 
   if (!item) throw new Error(`Monday item not found: ${taskId}`);
 
-  const descCol =
-    item.column_values?.find((c: any) => c.id === "description") ??
-    item.column_values?.[0];
+  const description = extractBlockContents(item.description?.blocks);
 
   return {
-    id: String(item.id),
-    title: item.name ?? "",
-    description: descCol?.text ?? "",
+    id: item.id,
+    name: item.name,
+    description,
   };
 }

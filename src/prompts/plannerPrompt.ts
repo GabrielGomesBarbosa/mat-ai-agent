@@ -1,7 +1,7 @@
 export function buildPlannerPrompt(args: {
     projectDocs: string;
     taskId: string;
-    taskTitle: string;
+    taskName: string;
     taskDescription: string;
 }) {
     return `
@@ -21,8 +21,8 @@ PROJECT CONTEXT:
 ${args.projectDocs || "(none provided)"}
 
 TASK ID: ${args.taskId}
-TITLE: ${args.taskTitle}
-DESCRIPTION:
+TASK NAME: ${args.taskName}
+TASK DESCRIPTION:
 ${args.taskDescription}
 
 Return ONLY a JSON object.
