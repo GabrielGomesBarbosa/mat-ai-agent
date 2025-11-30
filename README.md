@@ -5,7 +5,7 @@ A specialized AI Planner Agent built with Node.js, TypeScript, and OpenAI. This 
 ## 🚀 Features
 
 -   **AI-Powered Planning**: Uses OpenAI (GPT-4o) to analyze tasks and generate structured implementation plans.
--   **Monday.com Integration**: Directly fetches task titles and descriptions from Monday.com boards.
+-   **Monday.com Integration**: Directly fetches task titles and descriptions from Monday.com boards using the official SDK.
 -   **Context-Aware**: Reads project documentation from the `context/` directory to ensure plans are aligned with the project's architecture and design system.
 -   **Structured Output**: Generates JSON plans containing user stories, acceptance criteria, scope, implementation steps, and test cases.
 -   **Developer Experience**: Built with TypeScript, strict type safety, and alias imports for clean code.
@@ -15,8 +15,7 @@ A specialized AI Planner Agent built with Node.js, TypeScript, and OpenAI. This 
 -   **Runtime**: Node.js
 -   **Language**: TypeScript
 -   **AI**: OpenAI API
--   **Integration**: Monday.com GraphQL API
--   **HTTP Client**: Axios
+-   **Integration**: Monday.com API SDK
 
 ## 📋 Prerequisites
 
@@ -87,8 +86,11 @@ The agent will generate a JSON plan in the `plans/` directory, named `task-<TASK
 │   ├── orchestrator/    # CLI entry point
 │   ├── prompts/         # Prompt templates
 │   ├── retrieval/       # (Future) Code retrieval logic
+│   ├── schemas/         # Zod schemas for validation
+│   ├── services/        # External service clients (Monday, OpenAI)
 │   ├── tools/           # Utilities (Monday API, File System)
-│   └── types/           # TypeScript definitions
+│   ├── types/           # TypeScript definitions
+│   └── utils/           # Helper functions
 ├── .env.example         # Environment variables template
 ├── package.json         # Dependencies and scripts
 └── tsconfig.json        # TypeScript configuration
@@ -97,5 +99,6 @@ The agent will generate a JSON plan in the `plans/` directory, named `task-<TASK
 ## 🗺️ Roadmap
 
 - [ ] **Context Integration**: Get context files directly from the frontend repository.
-- [ ] **Monday SDK**: Update the Monday.com implementation to use `@mondaydotcomorg/api` instead of raw Axios calls.
+- [x] **Monday SDK**: Update the Monday.com implementation to use `@mondaydotcomorg/api` instead of raw Axios calls.
 - [ ] **Environment Config**: Include the frontend repository path in environment variables for better local integration.
+

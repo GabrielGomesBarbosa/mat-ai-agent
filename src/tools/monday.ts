@@ -1,8 +1,6 @@
-import axios from "axios";
-import { env } from "@/config/env";
 import mondayClient from "@/services/mondayClient";
-import { extractBlockContents } from "@/utils/content-parser";
 import { DocumentBlock } from "@/types/monday-types";
+import { extractBlockContents } from "@/utils/content-parser";
 
 export type MondayTask = {
   id: string;
