@@ -2,8 +2,12 @@ import OpenAI from "openai";
 import { env } from "@/config/env";
 import { loadProjectDocs } from "@/tools/docs";
 import { getMondayTaskById } from "@/tools/monday";
+import openAiClient from "@/services/openAIClient";
+import { saveDebugPrompt } from "@/utils/debug-prompt";
 import type { PlannerOutput } from "@/types/plannerTypes";
 import { buildPlannerPrompt } from "@/prompts/plannerPrompt";
+
+const model = "gpt-4.1-mini";
 
 export async function runPlannerAgent(taskId: string): Promise<PlannerOutput> {
     const [projectDocs, task] = await Promise.all([
@@ -21,16 +25,21 @@ export async function runPlannerAgent(taskId: string): Promise<PlannerOutput> {
         taskDescription: task.description,
     });
 
-    // const completion = await client.chat.completions.create({
-    //     model: "gpt-4o",
-    //     messages: [
-    //         { role: "system", content: "You output JSON only." },
-    //         { role: "user", content: prompt },
-    //     ],
-    //     response_format: { type: "json_object" },
-    // });
+    saveDebugPrompt(prompt, `planner/${taskId}`);
+
+    const completion = await openAiClient.chat.completions.create({
+        model,
+        messages: [
+            { role: "system", content: "You output JSON only." },
+            { role: "user", content: prompt },
+        ],
+        response_format: { type: "json_object" },
+    });
+
+    console.log(completion.choices[0].message.content);
+
+    saveDebugPrompt(completion.choices[0].message.content ?? "", `planner/open-ai-${taskId}`);
 
     // return JSON.parse(completion.choices[0].message.content ?? "{}");
-
     return {} as any
 }
