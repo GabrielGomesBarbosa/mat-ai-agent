@@ -1,5 +1,6 @@
-import fs from "fs/promises";
-import path from "path";
+import path from "node:path";
+import fs from "node:fs/promises";
+
 import type { PlannerOutput } from "@/types/plannerTypes";
 
 const dir = path.join(process.cwd(), "plans");

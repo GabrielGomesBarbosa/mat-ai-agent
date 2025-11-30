@@ -1,7 +1,7 @@
 export type PlannerTaskInfo = {
     id: string;
     title: string;
-    rawDescription: string;
+    description: string;
 };
 
 export type PlannerScope = {

@@ -159,7 +159,7 @@ if (!env.mondayToken) throw new Error("Missing MONDAY_API_TOKEN");
 export type PlannerTaskInfo = {
   id: string;
   title: string;
-  rawDescription: string;
+  description: string;
 };
 
 export type PlannerScope = {
