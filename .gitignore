@@ -3,4 +3,5 @@ dist
 .env
 /plans
 /debug
+/execution
 repo-index.json
