@@ -17,80 +17,25 @@ A specialized AI Planner Agent built with Node.js, TypeScript, and OpenAI. This 
 -   **AI**: OpenAI API
 -   **Integration**: Monday.com API SDK
 
-## 📋 Prerequisites
-
--   Node.js (v18 or higher)
--   npm
--   An OpenAI API Key
--   A Monday.com API Token
-
-## ⚙️ Installation
-
-1.  **Clone the repository:**
-    ```bash
-    git clone <repository-url>
-    cd mat-ai-agent
-    ```
-
-2.  **Install dependencies:**
-    ```bash
-    npm install
-    ```
-
-3.  **Configure Environment Variables:**
-    Copy the example environment file:
-    ```bash
-    cp .env.example .env
-    ```
-    Open `.env` and fill in your API keys:
-    ```env
-    OPENAI_API_KEY=your_openai_api_key_here
-    MONDAY_API_TOKEN=your_monday_api_token_here
-    MONDAY_API_URL=https://api.monday.com/v2
-    ```
-
-## 🏃‍♂️ Usage
-
-### Development Mode
-To run the planner agent directly with `tsx`:
-
-```bash
-npm run dev -- --taskId=<MONDAY_TASK_ID>
-```
-
-### Production Build
-To build and run the compiled JavaScript:
-
-1.  **Build the project:**
-    ```bash
-    npm run build
-    ```
-
-2.  **Run the planner:**
-    ```bash
-    npm run planner -- --taskId=<MONDAY_TASK_ID>
-    ```
-
-### Output
-The agent will generate a JSON plan in the `plans/` directory, named `task-<TASK_ID>.json`.
-
 ## 📂 Project Structure
 
 ```
 .
-├── context/             # Project documentation (Architecture, Design System)
+├── generated/           # Generated files (repo-index, memory)
 ├── plans/               # Generated implementation plans (JSON)
 ├── src/
-│   ├── agents/          # AI Agent logic (PlannerAgent)
+│   ├── agents/          # AI Agents (Planner, Executor)
 │   ├── config/          # Environment configuration
-│   ├── orchestrator/    # CLI entry point
-│   ├── prompts/         # Prompt templates
-│   ├── retrieval/       # (Future) Code retrieval logic
+│   ├── orchestrator/    # CLI entry points (run-planner, run-execution)
+│   ├── prompts/         # LLM Prompt templates
+│   ├── repo/            # Repository indexing and file loading logic
+│   ├── retrieval/       # Code retrieval logic
 │   ├── schemas/         # Zod schemas for validation
+│   ├── scripts/         # Utility scripts (test-execution, etc)
 │   ├── services/        # External service clients (Monday, OpenAI)
-│   ├── tools/           # Utilities (Monday API, File System)
-│   ├── types/           # TypeScript definitions
-│   └── utils/           # Helper functions
+│   ├── tools/           # Utilities (Simple tools)
+│   ├── types/           # TypeScript type definitions
+│   └── utils/           # Helper functions (normalize-diff, etc)
 ├── .env.example         # Environment variables template
 ├── package.json         # Dependencies and scripts
 └── tsconfig.json        # TypeScript configuration
@@ -325,8 +270,7 @@ flowchart TD
     
     JSON("📄 Planner JSON<br/>(plan.json)")
     MD("📝 Planner MD<br/>(plan.md)")
-    Missing("❓ Missing Info<br/>(Clarifications)")
-
+    
     %% ======================
     %% PHASE 2 — EXECUTOR
     %% ======================
@@ -353,7 +297,6 @@ flowchart TD
 
     PlannerAgent -->|"Generate structured plan"| JSON
     PlannerAgent -->|"Generate human-readable plan"| MD
-    PlannerAgent -->|"If needed"| Missing
 
     JSON -->|"Input"| ExecutionOrchestrator
     MD -->|"Reference"| ExecutionOrchestrator
@@ -383,11 +326,73 @@ flowchart TD
     class User user
     class AIClient,MondayAPI system
     class PlannerAgent,ExecutorAgent agent
-    class JSON,MD,Missing,Diffs,Metadata output
+    class JSON,MD,Diffs,Metadata output
     class ExecutionOrchestrator,FileLoader,ApplyPatches execution
     class Repo,Backup repo
 ```
 
+## 📋 Prerequisites
+
+-   Node.js (v18 or higher)
+-   npm
+-   An OpenAI API Key
+-   A Monday.com API Token
+
+## ⚙️ Installation
+
+1.  **Clone the repository:**
+    ```bash
+    git clone <repository-url>
+    cd mat-ai-agent
+    ```
+
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
+
+3.  **Configure Environment Variables:**
+    Copy the example environment file:
+    ```bash
+    cp .env.example .env
+    ```
+    Open `.env` and fill in your API keys:
+    ```env
+    OPENAI_API_KEY=your_openai_api_key_here
+    MONDAY_API_TOKEN=your_monday_api_token_here
+    MONDAY_API_URL=https://api.monday.com/v2
+    ```
+
+4.  **Generate Project Context:**
+    Run this command to build the initial context memory from your frontend repo:
+    ```bash
+    npm run build:project-context
+    ```
+
+## 🏃‍♂️ Usage
+
+### Development Mode
+To run the planner agent directly with `tsx`:
+
+```bash
+npm run dev -- --taskId=<MONDAY_TASK_ID>
+```
+
+### Production Build
+To build and run the compiled JavaScript:
+
+1.  **Build the project:**
+    ```bash
+    npm run build
+    ```
+
+2.  **Run the planner:**
+    ```bash
+    npm run planner -- --taskId=<MONDAY_TASK_ID>
+    ```
+
+### Output
+The agent will generate a JSON plan in the `plans/` directory, named `task-<TASK_ID>.json`.
 
 ## 🗺️ TODO
 
@@ -396,6 +401,7 @@ flowchart TD
 - [ ] **Environment Config**: Include the frontend repository path in environment variables for better local integration.
 - [ ] **Generated files**: Create a new folder called `generated` and move all generated files there. Files like planned, context, plans, repo-index.json, etc...
 - [ ] **Update Execution Task Id**: Update the `run-execution.ts` to use the task id to create folders, instead of random id.
+- [ ] **Plan Storage**: Move generated plans from `/plans` to `generated/plans`.
 
 ### Executor Enhancements (Complex Tasks Support)
 
@@ -439,6 +445,7 @@ export type ExecutorOutput = {
 
 ### Code Quality
 - [ ] **Repo Index**: Convert this repo-index.json into Hashmap later `src/repo/load-repo-files.ts`
+- [ ] **Repo Index Agent**: Create an Agent to automatically generate/update `repo-index.json`.
 - [ ] **ZOD Parsing**: Apply ZOD to parse `repoIndex` from `load-repo-files.ts`
 - [ ] **Review context context**: Check if the name from `/context` files is the best name for the file. Keep all files with original names and generated a new one called `merged-context.md`
 - [ ] **Generated files**: Create a new folder called `generated` and move all generated files there. Files like planned, context, plans, repo-index.json, etc...

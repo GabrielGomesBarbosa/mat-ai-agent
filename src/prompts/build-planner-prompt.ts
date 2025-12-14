@@ -1,4 +1,4 @@
-export function buildPlannerPrompt(args: {
+export default function buildPlannerPrompt(args: {
     projectDocs: string;
     taskId: string;
     taskName: string;

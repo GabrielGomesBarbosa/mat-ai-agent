@@ -1,10 +1,10 @@
 {
   "name": "mat-ai-agent",
-  "version": "0.0.16",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "planner": "node dist/orchestrator/runPlanner.js --taskId",
-    "test:planner": "tsx src/orchestrator/runPlanner.ts --taskId",
+    "planner": "node dist/orchestrator/run-planner.js --taskId",
+    "test:planner": "tsx src/orchestrator/run-planner.ts --taskId",
     "index:repo": "tsx src/repo/index-repo.ts",
     "build:project-context": "tsx src/utils/build-project-context.ts",
     "test:loader-files": "tsx src/scripts/test-loader-files.ts",
