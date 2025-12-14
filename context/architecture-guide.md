@@ -16,7 +16,7 @@ This document provides a comprehensive overview of the pos-react codebase struct
 - The project is actively being migrated from the old structure to this new structure
 - You may encounter legacy code that doesn't follow these patterns yet
 - When editing legacy code, migrate it to follow this structure (rename files, move to correct locations)
-- See [project-context.md](project-context.md) for coding conventions and patterns
+- See [ai-agent-instructions.md](ai-agent-instructions.md) for coding conventions and patterns
 
 ## Table of Contents
 
@@ -705,7 +705,7 @@ Three levels of hooks organization:
 
 ### Implementation Examples
 
-**For complete implementation examples of all utility hooks (useLocalStorage, useToggle, useMediaQuery, useClickOutside, and more), see [hooks-reference.md](hooks-reference.md).**
+**For complete implementation examples of all utility hooks (useLocalStorage, useToggle, useMediaQuery, useClickOutside, and more), see [hooks-catalog.md](hooks-catalog.md).**
 
 The reference guide includes:
 - Full TypeScript implementations with proper typing

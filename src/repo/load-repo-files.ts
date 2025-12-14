@@ -2,9 +2,9 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { env } from "@/config/env";
-import { RepoIndex } from "@/types/repo-index";
-import { LoadedFile } from "@/types/loaded-file";
-import { toPosixPath } from "@/utils/to-posix-path";
+import normalizePath from "@/utils/normalize-path";
+import type { RepoIndex } from "@/types/repo-index";
+import type { LoadedFile } from "@/types/loaded-file";
 
 if (!env.frontendRepoPath)
     throw new Error("FRONTEND_REPO_PATH missing in .env");
@@ -15,8 +15,9 @@ const indexJsonPath = path.resolve(process.cwd(), "repo-index.json");
 let repoIndex: RepoIndex;
 
 try {
-    if (!fs.existsSync(indexJsonPath))
+    if (!fs.existsSync(indexJsonPath)) {
         throw new Error("repo-index.json not found. Run 'npm run index:repo' first.");
+    }
 
     const raw = fs.readFileSync(indexJsonPath, "utf8");
     repoIndex = JSON.parse(raw) as RepoIndex;
@@ -37,13 +38,14 @@ try {
  * fileExistsInRepoIndex("src/ghost-file.ts"); // Throws Error
  */
 function fileExistsInRepoIndex(relPath: string) {
-    const exists = repoIndex.files.some(f => toPosixPath(f.path) === toPosixPath(relPath));
+    const exists = repoIndex.files.some(f => normalizePath(f.path) === normalizePath(relPath));
 
-    if (!exists)
+    if (!exists) {
         throw new Error(
             `File not found in repo-index.json: ${relPath}\n` +
             'The planner may have hallucinated this file.'
         );
+    }
 }
 
 /**
@@ -73,17 +75,18 @@ export async function loadRepoFiles(paths: string[]): Promise<LoadedFile[]> {
         fileExistsInRepoIndex(relPath);
 
         const absPath = path.join(repoRootPath, relPath);
-        const normalized = toPosixPath(absPath);
+        const normalized = normalizePath(absPath);
 
         console.log(`Loading file: ${absPath}`);
 
-        if (!fs.existsSync(absPath))
+        if (!fs.existsSync(absPath)) {
             throw new Error(`File physically missing: ${absPath}`);
+        }
 
         const content = fs.readFileSync(absPath, "utf8");
 
         results.push({
-            path: toPosixPath(relPath),
+            path: normalizePath(relPath),
             absolutePath: normalized,
             content
         });

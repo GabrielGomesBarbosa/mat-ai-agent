@@ -3,8 +3,8 @@
   "version": "0.0.16",
   "type": "module",
   "scripts": {
-    "dev": "tsx src/orchestrator/runPlanner.ts --taskId",
     "planner": "node dist/orchestrator/runPlanner.js --taskId",
+    "test:planner": "tsx src/orchestrator/runPlanner.ts --taskId",
     "index:repo": "tsx src/repo/index-repo.ts",
     "build:project-context": "tsx src/utils/build-project-context.ts",
     "test:loader-files": "tsx src/scripts/test-loader-files.ts",
