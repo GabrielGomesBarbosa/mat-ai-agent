@@ -16,7 +16,6 @@ function detectIndentation(content: string): { useTabs: boolean; tabSize: number
         if (line.match(/^ {2,}/)) spaceCount++;
     }
 
-    // Detect tab size
     let tabSize = 2;
     const spaceMatches = content.match(/^ +/gm);
     if (spaceMatches) {
@@ -43,18 +42,14 @@ function convertSpacesToTabs(diff: string, tabSize: number): string {
     const lines = diff.split('\n');
 
     return lines.map(line => {
-        // Skip headers and hunk markers
         if (line.startsWith('---') || line.startsWith('+++') || line.startsWith('@@')) {
             return line;
         }
 
-        // Process content lines (space/+/- prefix)
         if (line.length > 0 && (line[0] === ' ' || line[0] === '+' || line[0] === '-')) {
             const marker = line[0];
             const content = line.substring(1);
 
-
-            // Convert leading spaces to tabs
             let leadingSpaces = 0;
             for (const char of content) {
                 if (char === ' ') leadingSpaces++;
@@ -86,19 +81,15 @@ function extractContentFromDiff(diff: string): { oldContent: string; newContent:
     const newLines: string[] = [];
 
     for (const line of lines) {
-        // Skip headers
         if (line.startsWith('---') || line.startsWith('+++') || line.startsWith('@@')) {
             continue;
         }
 
         if (line.startsWith('-')) {
-            // Removed line (in old file)
             oldLines.push(line.substring(1));
         } else if (line.startsWith('+')) {
-            // Added line (in new file)
             newLines.push(line.substring(1));
         } else if (line.startsWith(' ')) {
-            // Context line (in both files)
             const content = line.substring(1);
             oldLines.push(content);
             newLines.push(content);
@@ -122,10 +113,8 @@ function extractContentFromDiff(diff: string): { oldContent: string; newContent:
 function isFullFileDiff(diff: string, originalContent: string): boolean {
     const lines = diff.split('\n');
 
-    // Count hunks
     const hunkCount = lines.filter(l => l.startsWith('@@')).length;
 
-    // If there's only one hunk, check if it's suspiciously large
     if (hunkCount === 1) {
         const contentLines = lines.filter(l =>
             l.startsWith(' ') || l.startsWith('+') || l.startsWith('-')
@@ -133,7 +122,6 @@ function isFullFileDiff(diff: string, originalContent: string): boolean {
 
         const originalLineCount = originalContent.split('\n').length;
 
-        // If the hunk has more than 70% of the original file's lines, it's likely a full-file diff
         if (contentLines.length > originalLineCount * 0.7) {
             return true;
         }

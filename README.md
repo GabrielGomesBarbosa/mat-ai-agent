@@ -220,22 +220,22 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    subgraph "fix-ai-diff.ts"
-        fixDiff[fixDiff<br/>Main orchestrator]
+    subgraph "normalize-diff.ts"
+        normalizeDiff[normalizeDiff<br/>Main orchestrator]
         
         isFullFile[isFullFileDiff<br/>Detects full-file diffs]
         extract[extractContentFromDiff<br/>Extracts old/new content]
         detectIndent[detectIndentation<br/>Detects tabs vs spaces]
         convertTabs[convertSpacesToTabs<br/>Fixes whitespace]
         
-        fixDiff --> isFullFile
+        normalizeDiff --> isFullFile
         isFullFile -->|Yes| extract
         extract --> createPatch[createTwoFilesPatch<br/>from diff library]
-        createPatch --> fixDiff
+        createPatch --> normalizeDiff
         
-        fixDiff --> detectIndent
+        normalizeDiff --> detectIndent
         detectIndent --> convertTabs
-        convertTabs --> fixDiff
+        convertTabs --> normalizeDiff
     end
     
     subgraph "apply-patch-safe.ts"
@@ -245,13 +245,13 @@ flowchart LR
         applyPatch --> Strategy2[Strategy 2:<br/>Fixed diff]
         applyPatch --> Strategy3[Strategy 3:<br/>patch command]
         
-        Strategy2 --> fixDiff
+        Strategy2 --> normalizeDiff
     end
     
     LLM[AI generates diff] --> applyPatch
     applyPatch --> Result[✅ Applied patch]
     
-    style fixDiff fill:#e8f5e9,stroke:#2e7d32,stroke-width:3px
+    style normalizeDiff fill:#e8f5e9,stroke:#2e7d32,stroke-width:3px
     style applyPatch fill:#e3f2fd,stroke:#1565c0,stroke-width:3px
     style LLM fill:#fff3e0,stroke:#ef6c00
     style Result fill:#e8f5e9,stroke:#2e7d32
@@ -267,7 +267,7 @@ flowchart LR
 
 ### Key Functions
 
-#### `fixDiff(diff: string, originalContent: string): string`
+#### `normalizeDiff(diff: string, originalContent: string): string`
 Main orchestrator that:
 1. Detects full-file diffs (>70% of file content in one hunk)
 2. Regenerates proper hunks using `createTwoFilesPatch()` if needed
