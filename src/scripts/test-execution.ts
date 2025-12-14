@@ -6,10 +6,10 @@ import { runExecution } from "@/orchestrator/run-execution";
 async function main() {
 
     console.log("Reading plan file...");
-    const jsonPlanContent = readFileSync("plans/test-plan.json", "utf-8");
+    const jsonPlanContent = readFileSync("plans/task-123.json", "utf-8");
 
     console.log("Reading context file...");
-    const projectDocsContext = readFileSync("context/project-context.md", "utf-8");
+    const projectDocsContext = readFileSync("generated/memory/project-context.md", "utf-8");
 
     console.log("Running execution...");
     const result = await runExecution({

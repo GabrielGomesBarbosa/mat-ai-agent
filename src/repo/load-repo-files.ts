@@ -10,7 +10,7 @@ if (!env.frontendRepoPath)
     throw new Error("FRONTEND_REPO_PATH missing in .env");
 
 const repoRootPath = path.resolve(env.frontendRepoPath);
-const indexJsonPath = path.resolve(process.cwd(), "repo-index.json");
+const indexJsonPath = path.resolve(process.cwd(), "generated/repo-index.json");
 
 let repoIndex: RepoIndex;
 

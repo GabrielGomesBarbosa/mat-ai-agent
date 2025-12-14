@@ -7,7 +7,6 @@ import type { RepoIndex, RepoFileEntry } from "@/types/repo-index";
 import { classifyFile } from "./classify-file";
 import { extractComponentName } from "./extract-component-name";
 
-// Validate repo path
 if (!env.frontendRepoPath) {
     console.error("❌ FRONTEND_REPO_PATH missing in .env");
     process.exit(1);
@@ -15,7 +14,6 @@ if (!env.frontendRepoPath) {
 
 const repoRoot = path.resolve(env.frontendRepoPath);
 
-// Extensions we support
 const CODE_EXT = [".ts", ".tsx", ".js", ".jsx"];
 
 function scanDirectory(dir: string): string[] {
@@ -26,14 +24,14 @@ function scanDirectory(dir: string): string[] {
         const stat = fs.statSync(full);
 
         if (stat.isDirectory()) {
-            // Ignore node_modules, dist, .next, build, .git
             if (
-                ["node_modules", "dist", "build", ".next", ".git"].some((skip) =>
+                ["node_modules", "dist", "build", ".next", ".git", ".claude", ".github", "husk", ".nyc_output", ".vscode", "coverage"].some((skip) =>
                     full.includes(skip)
                 )
             ) {
                 continue;
             }
+
             results = results.concat(scanDirectory(full));
         } else {
             if (CODE_EXT.includes(path.extname(item))) {
@@ -79,9 +77,13 @@ function buildRepoIndex(): RepoIndex {
 }
 
 function saveRepoIndex(index: RepoIndex) {
-    const outputPath = path.resolve("repo-index.json");
+    const generatedDir = path.resolve(process.cwd(), "generated");
+    if (!fs.existsSync(generatedDir)) {
+        fs.mkdirSync(generatedDir, { recursive: true });
+    }
+    const outputPath = path.join(generatedDir, "repo-index.json");
     fs.writeFileSync(outputPath, JSON.stringify(index, null, 2));
-    console.log(`✅ repo-index.json created!`);
+    console.log(`✅ repo-index.json created at ${outputPath}!`);
 }
 
 const index = buildRepoIndex();
