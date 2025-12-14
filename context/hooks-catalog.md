@@ -4,9 +4,9 @@ This document provides comprehensive reference material for creating and impleme
 
 **Last Updated:** November 14, 2024
 
-**For organization strategy and decision trees on where to place hooks, see [project-structure.md](project-structure.md) - "Hooks Organization" section.**
+**For organization strategy and decision trees on where to place hooks, see [architecture-guide.md](architecture-guide.md) - "Hooks Organization" section.**
 
-**For coding conventions and usage patterns, see [project-context.md](project-context.md).**
+**For coding conventions and usage patterns, see [ai-agent-instructions.md](ai-agent-instructions.md).**
 
 ---
 
@@ -508,6 +508,6 @@ export function useToggle(initialValue = false) {
 
 ## Additional Resources
 
-- **[project-structure.md](project-structure.md)** - Hooks organization strategy and decision trees
-- **[project-context.md](project-context.md)** - Coding conventions and patterns for writing hooks
+- **[architecture-guide.md](architecture-guide.md)** - Hooks organization strategy and decision trees
+- **[ai-agent-instructions.md](ai-agent-instructions.md)** - Coding conventions and patterns for writing hooks
 - **React Hooks Documentation** - https://react.dev/reference/react

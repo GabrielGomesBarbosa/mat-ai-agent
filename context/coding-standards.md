@@ -4,8 +4,8 @@ This document provides detailed coding conventions, patterns, and best practices
 
 **Last Updated:** November 14, 2024
 
-**For quick reference and common tasks, see [project-context.md](project-context.md).**
-**For architecture and file organization, see [project-structure.md](project-structure.md).**
+**For quick reference and common tasks, see [ai-agent-instructions.md](ai-agent-instructions.md).**
+**For architecture and file organization, see [architecture-guide.md](architecture-guide.md).**
 
 ---
 
