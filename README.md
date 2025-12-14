@@ -96,6 +96,71 @@ The agent will generate a JSON plan in the `plans/` directory, named `task-<TASK
 └── tsconfig.json        # TypeScript configuration
 ```
 
+## 📚 Context System
+
+The agent uses a context system to understand your project's architecture, design patterns, and conventions. This is powered by the `buildProjectContext` function.
+
+### How It Works
+
+The `buildProjectContext` function (located in `src/utils/build-project-context.ts`) automatically:
+
+1. **Scans** the `context/` directory for all `.md` and `.txt` files
+2. **Concatenates** them into a single string with clear file separators
+3. **Writes** the combined output to `context/project-context.md`
+4. **Returns** the concatenated content for use by the AI agent
+
+### Usage
+
+Simply place your project documentation files in the `context/` directory:
+
+```
+context/
+├── architecture.md
+├── design-system.md
+├── coding-standards.txt
+└── project-context.md  # Auto-generated output
+```
+
+The function will automatically combine all files (except `project-context.md` itself) into a single context document that the AI agent can use.
+
+### Function Signature
+
+```typescript
+export function buildProjectContext(): string
+```
+
+**Returns**: A string containing all context files concatenated with headers
+
+**Output Format**:
+```markdown
+### PROJECT CONTEXT
+
+---
+# FILE: architecture.md
+
+[content of architecture.md]
+
+---
+# FILE: design-system.md
+
+[content of design-system.md]
+```
+
+### Manual Build
+
+You can manually rebuild the context file at any time:
+
+```bash
+npm run build:project-context
+```
+
+### When to Use
+
+- Add new `.md` or `.txt` files to `context/` whenever you want the AI to be aware of specific project conventions
+- The function runs automatically when the agent starts
+- Run `npm run build:project-context` manually after adding/updating context files
+- The generated `project-context.md` file can be reviewed to see what context the AI is using
+
 ## Diagram
 
 ```mermaid
@@ -146,5 +211,6 @@ flowchart TD
 - [ ] **Environment Config**: Include the frontend repository path in environment variables for better local integration.
 - [ ] **Repo Index**: Convert this repo-index.json into Hashmap later `src/repo/load-repo-files.ts`
 - [ ] **ZOD Parsing**: Apply ZOD to parse `repoIndex` from `load-repo-files.ts`
+- [ ] **Review context context**: Check if the name from `/context` files is the best name for the file
 
-
+Unserstand how every things is conected

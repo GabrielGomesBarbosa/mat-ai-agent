@@ -6,7 +6,10 @@
     "dev": "tsx src/orchestrator/runPlanner.ts --taskId",
     "planner": "node dist/orchestrator/runPlanner.js --taskId",
     "index:repo": "tsx src/repo/index-repo.ts",
-    "test:loader": "tsx scripts/test-loader.ts",
+    "build:project-context": "tsx src/utils/build-project-context.ts",
+    "test:loader-files": "tsx src/scripts/test-loader-files.ts",
+    "test:execution": "tsx src/scripts/test-execution.ts",
+    "test:apply": "tsx src/scripts/test-apply.ts",
     "build": "tsc && tsc-alias"
   },
   "dependencies": {
