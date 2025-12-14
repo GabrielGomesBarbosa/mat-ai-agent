@@ -15,8 +15,9 @@ const indexJsonPath = path.resolve(process.cwd(), "repo-index.json");
 let repoIndex: RepoIndex;
 
 try {
-    if (!fs.existsSync(indexJsonPath))
+    if (!fs.existsSync(indexJsonPath)) {
         throw new Error("repo-index.json not found. Run 'npm run index:repo' first.");
+    }
 
     const raw = fs.readFileSync(indexJsonPath, "utf8");
     repoIndex = JSON.parse(raw) as RepoIndex;
@@ -39,11 +40,12 @@ try {
 function fileExistsInRepoIndex(relPath: string) {
     const exists = repoIndex.files.some(f => toPosixPath(f.path) === toPosixPath(relPath));
 
-    if (!exists)
+    if (!exists) {
         throw new Error(
             `File not found in repo-index.json: ${relPath}\n` +
             'The planner may have hallucinated this file.'
         );
+    }
 }
 
 /**
@@ -77,8 +79,9 @@ export async function loadRepoFiles(paths: string[]): Promise<LoadedFile[]> {
 
         console.log(`Loading file: ${absPath}`);
 
-        if (!fs.existsSync(absPath))
+        if (!fs.existsSync(absPath)) {
             throw new Error(`File physically missing: ${absPath}`);
+        }
 
         const content = fs.readFileSync(absPath, "utf8");
 
