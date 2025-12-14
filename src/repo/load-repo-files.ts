@@ -2,9 +2,9 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { env } from "@/config/env";
-import { RepoIndex } from "@/types/repo-index";
-import { LoadedFile } from "@/types/loaded-file";
-import { toPosixPath } from "@/utils/to-posix-path";
+import toPosixPath from "@/utils/to-posix-path";
+import type { RepoIndex } from "@/types/repo-index";
+import type { LoadedFile } from "@/types/loaded-file";
 
 if (!env.frontendRepoPath)
     throw new Error("FRONTEND_REPO_PATH missing in .env");

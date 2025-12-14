@@ -3,7 +3,7 @@ import path from "node:path";
 import { applyPatch } from "diff";
 import { execSync } from "node:child_process";
 
-import { fixDiff } from "./fix-ai-diff";
+import { normalizeDiff } from "./normalize-diff";
 
 /**
  * Applies a patch to a file using a robust 3-strategy fallback system.
@@ -13,7 +13,7 @@ import { fixDiff } from "./fix-ai-diff";
  * in order:
  * 
  * 1. **Original Diff (JS)**: Uses `diff` library with the raw AI output.
- * 2. **Fixed Diff (JS)**: Pre-processes the diff using `fixDiff` (corrects headers, whitespace, full-file diffs) 
+ * 2. **Fixed Diff (JS)**: Pre-processes the diff using `normalizeDiff` (corrects headers, whitespace, full-file diffs) 
  *    and retries with the `diff` library.
  * 3. **Native Patch Command (System)**: Uses the system's `patch` command with `--ignore-whitespace`. 
  *    This is the most forgiving strategy but requires the file to be written to disk temporarily.
@@ -54,7 +54,7 @@ export default function applyPatchWithFallback(
 
     try {
         console.log("Strategy 2: diff library with fixes...");
-        const fixedDiff = fixDiff(diff, originalContent);
+        const fixedDiff = normalizeDiff(diff, originalContent);
 
         const result = applyPatch(originalContent, fixedDiff);
         if (result !== false) {
@@ -76,7 +76,7 @@ export default function applyPatchWithFallback(
             const tmpDiff = path.join(tmpDir, 'changes.patch');
 
             fs.writeFileSync(tmpFile, originalContent, 'utf8');
-            const fixedDiff = fixDiff(diff, originalContent);
+            const fixedDiff = normalizeDiff(diff, originalContent);
             fs.writeFileSync(tmpDiff, fixedDiff, 'utf8');
 
             try {
