@@ -212,3 +212,4 @@ flowchart TD
 - [ ] **Repo Index**: Convert this repo-index.json into Hashmap later `src/repo/load-repo-files.ts`
 - [ ] **ZOD Parsing**: Apply ZOD to parse `repoIndex` from `load-repo-files.ts`
 - [ ] **Review context context**: Check if the name from `/context` files is the best name for the file. Keep all files with original names and generated a new one called `merged-context.md`
+- [ ] **Generated files**: Create a new folder called `generated` and move all generated files there. Files like planned, context, plans, repo-index.json, etc...
