@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { env } from "@/config/env";
-import toPosixPath from "@/utils/to-posix-path";
+import normalizePath from "@/utils/normalize-path";
 import type { RepoIndex } from "@/types/repo-index";
 import type { LoadedFile } from "@/types/loaded-file";
 
@@ -38,7 +38,7 @@ try {
  * fileExistsInRepoIndex("src/ghost-file.ts"); // Throws Error
  */
 function fileExistsInRepoIndex(relPath: string) {
-    const exists = repoIndex.files.some(f => toPosixPath(f.path) === toPosixPath(relPath));
+    const exists = repoIndex.files.some(f => normalizePath(f.path) === normalizePath(relPath));
 
     if (!exists) {
         throw new Error(
@@ -75,7 +75,7 @@ export async function loadRepoFiles(paths: string[]): Promise<LoadedFile[]> {
         fileExistsInRepoIndex(relPath);
 
         const absPath = path.join(repoRootPath, relPath);
-        const normalized = toPosixPath(absPath);
+        const normalized = normalizePath(absPath);
 
         console.log(`Loading file: ${absPath}`);
 
@@ -86,7 +86,7 @@ export async function loadRepoFiles(paths: string[]): Promise<LoadedFile[]> {
         const content = fs.readFileSync(absPath, "utf8");
 
         results.push({
-            path: toPosixPath(relPath),
+            path: normalizePath(relPath),
             absolutePath: normalized,
             content
         });
