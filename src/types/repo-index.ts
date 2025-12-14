@@ -1,5 +1,11 @@
+/**
+ * Represents a single file in the repository index.
+ * Stores metadata used for retrieval and analysis.
+ */
 export type RepoFileEntry = {
+    /** Relative path from repo root (normalized to forward slashes) */
     path: string;
+    /** Classified type of the file (e.g., 'component', 'hook', 'utility') */
     type:
     | "component"
     | "page"
@@ -29,9 +35,18 @@ export type RepoFileEntry = {
     | "type"
     | "config"
     | "unknown";
+    /** Size of the file in bytes */
     size: number;
+    /** Name of the primary component exported, if any (e.g. "Header") */
     componentName?: string;
+    /** Last modified timestamp (ms) */
     lastModified?: number;
+    /** List of modules or symbols imported by this file */
+    imports?: string[]
+    /** List of symbols exported by this file */
+    exports?: string[]
+    /** Top-level symbols defined in the file (functions, classes, consts) */
+    symbols?: string[]
 };
 
 export type RepoIndex = {

@@ -6,6 +6,7 @@ import type { RepoIndex, RepoFileEntry } from "@/types/repo-index";
 
 import { classifyFile } from "./classify-file";
 import { extractComponentName } from "./extract-component-name";
+import { extractImportsAndExports } from "./extract-imports-exports";
 
 if (!env.frontendRepoPath) {
     console.error("❌ FRONTEND_REPO_PATH missing in .env");
@@ -59,14 +60,22 @@ function buildRepoIndex(): RepoIndex {
 
         const type = classifyFile(relPath);
         const componentName = extractComponentName(content);
+        const { imports, exports } = extractImportsAndExports(content);
 
-        entries.push({
+        const symbols = Array.from(new Set([...imports, ...exports, componentName].filter(Boolean))) as string[];
+
+        const entry: RepoFileEntry = {
             path: relPath,
             type,
             size: stat.size,
             lastModified: stat.mtimeMs,
             componentName,
-        });
+            imports: imports.length > 0 ? imports : undefined,
+            exports: exports.length > 0 ? exports : undefined,
+            symbols: symbols.length > 0 ? symbols : undefined,
+        };
+
+        entries.push(entry);
     }
 
     return {

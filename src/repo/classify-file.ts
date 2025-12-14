@@ -1,5 +1,19 @@
 import type { RepoFileEntry } from "@/types/repo-index";
 
+/**
+ * Classifies a file into a specific type based on its path structure.
+ * This function uses a series of heuristic checks on the file path string
+ * to determine if a file is a component, hook, utility, config, etc.
+ *
+ * The order of checks is important (e.g., checking specific "shared" modules before generic ones).
+ *
+ * @param filePath - The relative path of the file to classify (e.g., "src/components/Header.tsx")
+ * @returns The specific `RepoFileEntry['type']` enum value (e.g., "component", "hook", "config")
+ *
+ * @example
+ * classifyFile("src/modules/shared/components/Button.tsx"); // "shared-component"
+ * classifyFile("src/utils/date.ts"); // "utility"
+ */
 export function classifyFile(filePath: string): RepoFileEntry["type"] {
     const p = filePath.toLowerCase();
 
