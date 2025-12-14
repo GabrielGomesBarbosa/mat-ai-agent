@@ -364,3 +364,227 @@ for (const step of steps) {
 4. **Unix tools are forgiving** - `patch` command handles issues the `diff` library rejects
 
 **Final Result:** ✅ System now reliably generates and applies code modifications with proper validation and fallback strategies.
+
+---
+
+## 3. New Issue: AI Generating Full-File Diffs with Wrong Hunk Headers
+
+### Current Problem (2024-12-14)
+
+When running `npm run test:execution` followed by `npm run test:apply`, patches fail to apply with:
+
+```
+Strategy 1: diff library with original...
+✗ Failed: Removed line count did not match for hunk at line 1
+Strategy 2: diff library with fixes...
+✗ Failed: [similar error]
+Strategy 3: patch command...
+✗ Failed: Command failed: patch --ignore-whitespace
+❌ Failed: src/components/alerts/alerts.jsx → Patch rejected - unable to apply with any strategy
+```
+
+**Root Cause:**
+
+The AI (gpt-4.1-mini) is generating a diff with a **hunk header that doesn't match the actual content**:
+
+```diff
+@@ -1,14 +1,16 @@
+-import { useMemo } from 'react'
+-import { useAlertsState } from '@/components/alerts/contexts/alerts-context'
+-import { useAlert } from '@/modules/shared/hooks'
+-import { animated, useTransition } from '@react-spring/web'
+-import { Alert } from './alert'
+-
+-const alertConfig = { tension: 125, friction: 20, precision: 0.1 }
+-const alertTimeout = 5000
+-
+-export function Alerts() {
+- 	const { remove } = useAlert()
+- 	const {
+- 		state: { alerts },
+- 	} = useAlertsState()
+[... continues for 50+ lines ...]
+```
+
+**The Problem:**
+- Header says: `@@ -1,14 +1,16 @@` (remove 14 lines, add 16 lines)
+- Actual content: Removes 50+ lines and adds 50+ lines
+- This is a **full-file replacement** disguised as a small change
+
+### Why This Happens
+
+1. **AI doesn't understand unified diff format** - Despite detailed instructions in the prompt, the model generates a single giant hunk instead of:
+   - Multiple small hunks for separate changes
+   - Proper context lines (only 3 before/after each change)
+   - Accurate line counts in hunk headers
+
+2. **Model limitation** - `gpt-4.1-mini` may not have enough capability to:
+   - Count lines accurately
+   - Generate multiple hunks for changes in different parts of the file
+   - Follow the strict unified diff format
+
+3. **Prompt doesn't enforce structure** - The current prompt explains the format but doesn't:
+   - Show examples of files with multiple changes
+   - Explicitly forbid full-file diffs
+   - Validate output before returning
+
+### Analysis of the Generated Diff
+
+**What the AI should have generated** (2 separate hunks):
+
+```diff
+--- src/components/alerts/alerts.jsx
++++ src/components/alerts/alerts.jsx
+@@ -5,6 +5,8 @@
+ import { Alert } from './alert'
+ 
++console.log('my first interaction')
++
+ const alertConfig = { tension: 125, friction: 20, precision: 0.1 }
+ const alertTimeout = 5000
+ 
+@@ -37,7 +39,7 @@
+ 	})
+ 
+ 	return (
+-		<div className="fixed top-2 right-2" style={{ zIndex: 1400 }}>
++		<div className="fixed top-2 right-2 z-[1400]">
+ 			{transitions(({ life, ...style }, alert) => {
+ 				return (
+```
+
+**What the AI actually generated:**
+- One giant hunk with wrong line counts
+- Entire file content included
+- Makes it impossible for patch tools to apply
+
+### Potential Solutions
+
+#### Option 1: Upgrade Model (Again)
+Try `gpt-4o` instead of `gpt-4.1-mini`:
+
+```typescript
+// src/agents/executor-agent.ts
+const response = await client.chat.completions.create({
+    model: "gpt-4o",  // More capable model
+    messages: [{ role: "user", content: prompt }],
+    temperature: 0,
+});
+```
+
+**Pros:** May generate better diffs  
+**Cons:** More expensive, not guaranteed to fix the issue
+
+#### Option 2: Post-Process AI Output
+Add a validation/fixing step that:
+1. Parses the AI-generated diff
+2. Detects full-file replacements
+3. Regenerates proper hunks by comparing old vs new content
+
+```typescript
+function fixFullFileDiff(diff: string, originalContent: string): string {
+    // Parse diff to detect if it's a full-file replacement
+    // If yes, use a proper diff library to generate correct hunks
+    // Return fixed diff
+}
+```
+
+**Pros:** Fixes the issue at the source  
+**Cons:** Complex to implement, may introduce new bugs
+
+#### Option 3: Use Structured Output with Line Numbers
+Change the prompt to request line-based changes instead of diffs:
+
+```json
+{
+  "modifications": [
+    {
+      "path": "src/file.tsx",
+      "changes": [
+        { "type": "insert", "afterLine": 6, "content": "console.log('test')" },
+        { "type": "replace", "line": 38, "oldContent": "...", "newContent": "..." }
+      ]
+    }
+  ]
+}
+```
+
+Then generate the unified diff programmatically.
+
+**Pros:** More reliable, easier for AI to generate  
+**Cons:** Requires rewriting executor agent and prompt
+
+#### Option 4: Fix Hunk Headers Programmatically
+Enhance `fix-ai-diff.ts` to handle full-file diffs:
+
+```typescript
+export function fixDiff(diff: string, originalContent: string): string {
+    // Detect if hunk claims small change but has full file
+    // If detected, use diff library to generate proper diff from scratch
+    const lines = diff.split('\n');
+    const removedLines = lines.filter(l => l.startsWith('-')).map(l => l.substring(1));
+    const addedLines = lines.filter(l => l.startsWith('+')).map(l => l.substring(1));
+    
+    // If this looks like a full file replacement, regenerate diff
+    if (removedLines.length > 20 && addedLines.length > 20) {
+        return generateProperDiff(
+            removedLines.join('\n'),
+            addedLines.join('\n')
+        );
+    }
+    
+    // Otherwise, just fix line counts as before
+    return fixLineCountsOnly(diff);
+}
+```
+
+**Pros:** Fixes the immediate issue  
+**Cons:** Heuristic-based, may not work for all cases
+
+### Recommended Approach
+
+**Short-term:** Implement Option 4 (fix hunk headers programmatically)  
+**Long-term:** Consider Option 3 (structured output) for more reliability
+
+### ✅ Solution Implemented (2024-12-14)
+
+**Implemented:** Option 4 + Model Upgrade
+
+1. **Enhanced `fix-ai-diff.ts`** with full-file diff detection and regeneration:
+   - Detects when a diff has one giant hunk with >70% of file content
+   - Extracts old and new content from the malformed diff
+   - Uses `createTwoFilesPatch()` from `diff` library to regenerate proper hunks
+   - Continues with existing whitespace and line count fixes
+
+2. **Upgraded model** from `gpt-4.1-mini` to `gpt-4o`:
+   - More capable model reduces frequency of malformed diffs
+   - Better instruction following for unified diff format
+
+3. **Enhanced prompt** with explicit warning:
+   - Added clear warning against full-file diffs
+   - Emphasized requirement for multiple small hunks
+   - Provided concrete example of when to split hunks
+
+**Result:**
+```bash
+$ npm run test:apply
+
+=== Patch Application ===
+Strategy 1: diff library with original...
+✗ Failed: Removed line count did not match for hunk at line 1
+Strategy 2: diff library with fixes...
+⚠️  Detected full-file diff, regenerating with proper hunks...
+✓ Regenerated diff with proper hunks
+✓ Success with diff library
+✔ Updated: src/components/alerts/alerts.jsx
+```
+
+The system now:
+- ✅ Detects full-file diffs automatically
+- ✅ Regenerates them with proper hunks
+- ✅ Applies patches successfully
+- ✅ Uses better model to reduce issues at source
+
+### Status
+
+✅ **RESOLVED** - Patches now apply successfully with automatic fix for malformed diffs
