@@ -204,13 +204,11 @@ flowchart TD
 ```
 
 
-## 🗺️ Roadmap
+## 🗺️ TODO
 
 - [ ] **Context Integration**: Get context files directly from the frontend repository.
 - [x] **Monday SDK**: Update the Monday.com implementation to use `@mondaydotcomorg/api` instead of raw Axios calls.
 - [ ] **Environment Config**: Include the frontend repository path in environment variables for better local integration.
 - [ ] **Repo Index**: Convert this repo-index.json into Hashmap later `src/repo/load-repo-files.ts`
 - [ ] **ZOD Parsing**: Apply ZOD to parse `repoIndex` from `load-repo-files.ts`
-- [ ] **Review context context**: Check if the name from `/context` files is the best name for the file
-
-Unserstand how every things is conected
+- [ ] **Review context context**: Check if the name from `/context` files is the best name for the file. Keep all files with original names and generated a new one called `merged-context.md`
