@@ -21,19 +21,21 @@ A specialized AI Planner Agent built with Node.js, TypeScript, and OpenAI. This 
 
 ```
 .
-├── context/             # Project documentation (Architecture, Design System)
+├── generated/           # Generated files (repo-index, memory)
 ├── plans/               # Generated implementation plans (JSON)
 ├── src/
-│   ├── agents/          # AI Agent logic (PlannerAgent)
+│   ├── agents/          # AI Agents (Planner, Executor)
 │   ├── config/          # Environment configuration
-│   ├── orchestrator/    # CLI entry point
-│   ├── prompts/         # Prompt templates
-│   ├── retrieval/       # (Future) Code retrieval logic
+│   ├── orchestrator/    # CLI entry points (run-planner, run-execution)
+│   ├── prompts/         # LLM Prompt templates
+│   ├── repo/            # Repository indexing and file loading logic
+│   ├── retrieval/       # Code retrieval logic
 │   ├── schemas/         # Zod schemas for validation
+│   ├── scripts/         # Utility scripts (test-execution, etc)
 │   ├── services/        # External service clients (Monday, OpenAI)
-│   ├── tools/           # Utilities (Monday API, File System)
-│   ├── types/           # TypeScript definitions
-│   └── utils/           # Helper functions
+│   ├── tools/           # Utilities (Simple tools)
+│   ├── types/           # TypeScript type definitions
+│   └── utils/           # Helper functions (normalize-diff, etc)
 ├── .env.example         # Environment variables template
 ├── package.json         # Dependencies and scripts
 └── tsconfig.json        # TypeScript configuration
